@@ -24,6 +24,15 @@ THE SOFTWARE.
 
 #include "Settings.h"
 #include <vector>
+#include <iostream>
+#include <exception>
+using namespace std;
+
+struct Exception : public exception {
+   const char * what () const throw () {
+      return "C++ Exception";
+   }
+};
 
 namespace Settings
 {
@@ -47,16 +56,31 @@ void bundleLibs(bool on){ bundleLibs_bool = on; }
 
 
 std::string dest_folder_str = "./libs/";
-std::string destFolder(){ return dest_folder_str; }
+std::string destFolder(){ 
+    try{
+    return dest_folder_str; 
+    }catch(Exception& e) {
+      std::cout << "MyException caught" << std::endl;
+      std::cout << e.what() << std::endl;
+   }
+}
 void destFolder(std::string path)
 {
     dest_folder_str = path;
     // fix path if needed so it ends with '/'
-    if( dest_folder_str[ dest_folder_str.size()-1 ] != '/' ) dest_folder_str += "/";
+    if( dest_folder_str[ dest_folder_str.size()-1 ] != '/' ) 
+        dest_folder_str += "/";
 }
 
-std::vector<std::string> files;
-void addFileToFix(std::string path){ files.push_back(path); }
+std::vector<std::string> VectStrings;
+void addFileToFix(std::string path){ 
+    try{
+    VectStrings.push_back(path); 
+    }catch(Exception& e) {
+      std::cout << "Exception caught" << std::endl;
+      std::cout << e.what() << std::endl;
+   }
+}
 int fileToFixAmount(){ return files.size(); }
 std::string fileToFix(const int n){ return files[n]; }
 
@@ -66,14 +90,20 @@ void inside_lib_path(std::string p)
 {
     inside_path_str = p;
     // fix path if needed so it ends with '/'
-    if( inside_path_str[ inside_path_str.size()-1 ] != '/' ) inside_path_str += "/";
+    if( inside_path_str[ inside_path_str.size()-1 ] != '/' ) 
+        inside_path_str += "/";
 }
 
 std::vector<std::string> prefixes_to_ignore;
 void ignore_prefix(std::string prefix)
 {
     if( prefix[ prefix.size()-1 ] != '/' ) prefix += "/";
+    try{
     prefixes_to_ignore.push_back(prefix);
+    }catch(Exception& e) {
+      std::cout << "Exception caught" << std::endl;
+      std::cout << e.what() << std::endl;
+   }
 }
 
 bool isPrefixBundled(std::string prefix)
@@ -85,7 +115,8 @@ bool isPrefixBundled(std::string prefix)
     const int prefix_amount = prefixes_to_ignore.size();
     for(int n=0; n<prefix_amount; n++)
     {
-        if(prefix.compare(prefixes_to_ignore[n]) == 0) return false;
+        if(prefix.compare(prefixes_to_ignore[n]) == 0) 
+            return false;
     }
     
     return true;
